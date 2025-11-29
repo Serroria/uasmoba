@@ -3,6 +3,8 @@ import 'homepage.dart';
 import 'ui/login_page.dart';
 import 'ui/registrasi_page.dart';
 import 'widgets/bottom_nav.dart';
+import 'ui/my_resep_page.dart';
+import 'ui/tambah_resep_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,8 +24,11 @@ class MyApp extends StatelessWidget {
         "/login": (context) => const LoginPage(),
         "/registrasi": (context) => const RegistrasiPage(),
         "/home": (context) => const HomePage(),
+        "/my-resep": (context) => const MyResepPage(),
+        "/tambah-resep": (context) => const TambahResepPage(),
 
         // Wrapper untuk navbar
+        // ignore: equal_keys_in_map
         "/home": (context) => const NavWrapper(),
       },
     );
@@ -44,7 +49,7 @@ class _NavWrapperState extends State<NavWrapper> {
   final List<Widget> _tabs = [
     const HomePage(),
     const Center(child: Text("Kreasiku Page")),
-    const Center(child: Text("Masak Page")),
+    const MyResepPage(), // Ganti dengan halaman My Resep
     const Center(child: Text("Profil Page")),
   ];
 
