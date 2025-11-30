@@ -8,7 +8,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String _username = "User"; // Nanti diganti saat login dari backend
+  final String _username = "User"; // Nanti diganti saat login dari backend
 
   @override
   Widget build(BuildContext context) {

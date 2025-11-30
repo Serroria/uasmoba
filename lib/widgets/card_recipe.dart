@@ -10,7 +10,7 @@ class RecipeCard extends StatelessWidget {
   final String author;
 
   const RecipeCard({
-    Key? key,
+    super.key,
     required this.imageUrl,
     required this.title,
     required this.rating,
@@ -18,7 +18,7 @@ class RecipeCard extends StatelessWidget {
     required this.kategori,
     required this.difficulty,
     required this.author,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +74,7 @@ class RecipeCard extends StatelessWidget {
                     Icon(Icons.star, color: Colors.amber, size: 14),
                     SizedBox(width: 4),
                     Text(
-                      '$rating',
+                      rating,
                       style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                     SizedBox(height: 8),

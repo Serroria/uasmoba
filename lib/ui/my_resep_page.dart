@@ -11,7 +11,7 @@ class MyResepPage extends StatefulWidget {
 
 class _MyResepPageState extends State<MyResepPage> {
   // Dummy data resep yang dibuat sendiri
-  List<Map<String, dynamic>> _myRecipes = [
+  final List<Map<String, dynamic>> _myRecipes = [
     {
       'id': 1,
       'title': 'Nasi Goreng Spesial',
@@ -19,7 +19,7 @@ class _MyResepPageState extends State<MyResepPage> {
       'image': 'https://picsum.photos/id/201/200',
       'rating': 4.8,
       'time': '30 min',
-      'difficulty': 'Mudah'
+      'difficulty': 'Mudah',
     },
     {
       'id': 2,
@@ -28,7 +28,7 @@ class _MyResepPageState extends State<MyResepPage> {
       'image': 'https://picsum.photos/id/202/200',
       'rating': 4.9,
       'time': '45 min',
-      'difficulty': 'Sedang'
+      'difficulty': 'Sedang',
     },
   ];
 
@@ -74,9 +74,7 @@ class _MyResepPageState extends State<MyResepPage> {
           ),
         ],
       ),
-      body: _myRecipes.isEmpty
-          ? _buildEmptyState()
-          : _buildRecipeList(),
+      body: _myRecipes.isEmpty ? _buildEmptyState() : _buildRecipeList(),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToTambahResep,
         backgroundColor: Colors.deepOrange,
@@ -90,11 +88,7 @@ class _MyResepPageState extends State<MyResepPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.menu_book,
-            size: 80,
-            color: Colors.grey.shade300,
-          ),
+          Icon(Icons.menu_book, size: 80, color: Colors.grey.shade300),
           const SizedBox(height: 20),
           Text(
             "Belum ada resep",
@@ -107,10 +101,7 @@ class _MyResepPageState extends State<MyResepPage> {
           const SizedBox(height: 8),
           Text(
             "Tambahkan resep pertama Anda",
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade500,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
           ),
           const SizedBox(height: 20),
           ElevatedButton(
@@ -218,20 +209,11 @@ class _MyResepPageState extends State<MyResepPage> {
                       // Meta info
                       Row(
                         children: [
-                          _buildMetaInfo(
-                            Icons.schedule,
-                            recipe['time'],
-                          ),
+                          _buildMetaInfo(Icons.schedule, recipe['time']),
                           const SizedBox(width: 12),
-                          _buildMetaInfo(
-                            Icons.star,
-                            '${recipe['rating']}',
-                          ),
+                          _buildMetaInfo(Icons.star, '${recipe['rating']}'),
                           const SizedBox(width: 12),
-                          _buildMetaInfo(
-                            Icons.flag,
-                            recipe['difficulty'],
-                          ),
+                          _buildMetaInfo(Icons.flag, recipe['difficulty']),
                         ],
                       ),
                     ],
@@ -262,13 +244,7 @@ class _MyResepPageState extends State<MyResepPage> {
       children: [
         Icon(icon, size: 14, color: Colors.deepOrange),
         const SizedBox(width: 4),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey.shade600,
-          ),
-        ),
+        Text(text, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
       ],
     );
   }
@@ -323,10 +299,7 @@ class _MyResepPageState extends State<MyResepPage> {
               Navigator.pop(context);
               _deleteRecipe(recipeId);
             },
-            child: const Text(
-              'Hapus',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
