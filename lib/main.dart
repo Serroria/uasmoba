@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uasmoba/ui/halaman_resep.dart';
 import 'homepage.dart';
 import 'ui/login_page.dart';
 import 'ui/registrasi_page.dart';
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
         "/home": (context) => const HomePage(),
         "/my-resep": (context) => const MyResepPage(),
         "/tambah-resep": (context) => const TambahResepPage(),
-
+        "/resep": (context) => const HalamanResep(),
         // Wrapper untuk navbar
         // ignore: equal_keys_in_map
         "/home": (context) => const NavWrapper(),
@@ -48,6 +49,7 @@ class _NavWrapperState extends State<NavWrapper> {
 
   final List<Widget> _tabs = [
     const HomePage(),
+    const HalamanResep(),
     const Center(child: Text("Kreasiku Page")),
     const MyResepPage(), // Ganti dengan halaman My Resep
     const Center(child: Text("Profil Page")),
