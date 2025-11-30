@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "Aplikasi Resep",
       theme: ThemeData(primarySwatch: Colors.deepOrange),
-      initialRoute: "/login",
+      initialRoute: "/home",
       routes: {
         "/login": (context) => const LoginPage(),
         "/registrasi": (context) => const RegistrasiPage(),
@@ -50,8 +50,9 @@ class _NavWrapperState extends State<NavWrapper> {
   final List<Widget> _tabs = [
     const HomePage(),
     const HalamanResep(),
+    const MyResepPage(),
     const Center(child: Text("Kreasiku Page")),
-    const MyResepPage(), // Ganti dengan halaman My Resep
+    // Ganti dengan halaman My Resep
     const Center(child: Text("Profil Page")),
   ];
 

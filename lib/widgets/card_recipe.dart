@@ -5,6 +5,8 @@ class RecipeCard extends StatelessWidget {
   final String title;
   final String rating;
   final int steps;
+  final String kategori;
+  final String difficulty;
   final String author;
 
   const RecipeCard({
@@ -13,6 +15,8 @@ class RecipeCard extends StatelessWidget {
     required this.title,
     required this.rating,
     required this.steps,
+    required this.kategori,
+    required this.difficulty,
     required this.author,
   }) : super(key: key);
 
@@ -80,8 +84,37 @@ class RecipeCard extends StatelessWidget {
                       '$steps langkah',
                       style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
+                    Spacer(),
+
                     Spacer(), // Mendorong widget berikutnya ke kanan
                     Icon(Icons.bookmark_border, color: Colors.grey, size: 20),
+                  ],
+                ),
+                SizedBox(height: 8),
+
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'kategori: $kategori',
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    ),
+
+                    Text(
+                      'kesulitan: $difficulty',
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+
+                Row(
+                  children: [
+                    Spacer(),
+
+                    Text(
+                      'author: $author',
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    ),
                   ],
                 ),
               ],

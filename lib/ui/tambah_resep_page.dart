@@ -11,11 +11,20 @@ class TambahResepPage extends StatefulWidget {
 class _TambahResepPageState extends State<TambahResepPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _kategoriController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _ingredientsController = TextEditingController();
   final TextEditingController _stepsController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
 
+  String? _selectedKategori;
+  final List<String> _kategoriList = [
+    'Nusantara',
+    'Asia',
+    'Western',
+    'Vegetarian',
+    'Minuman',
+  ];
   String _difficulty = 'Mudah';
   final List<String> _difficultyLevels = ['Mudah', 'Sedang', 'Sulit'];
 
@@ -35,8 +44,10 @@ class _TambahResepPageState extends State<TambahResepPage> {
       final newRecipe = {
         'id': DateTime.now().millisecondsSinceEpoch,
         'title': _titleController.text,
+        'kategori': _selectedKategori,
         'description': _descriptionController.text,
-        'image': 'https://picsum.photos/id/${DateTime.now().millisecondsSinceEpoch % 100 + 300}/200',
+        'image_url':
+            'https://picsum.photos/id/${DateTime.now().millisecondsSinceEpoch % 100 + 300}/200',
         'rating': 4.5,
         'time': _timeController.text,
         'difficulty': _difficulty,
@@ -102,9 +113,7 @@ class _TambahResepPageState extends State<TambahResepPage> {
                     const SizedBox(height: 8),
                     Text(
                       "Tambahkan Foto Resep",
-                      style: TextStyle(
-                        color: Colors.grey.shade500,
-                      ),
+                      style: TextStyle(color: Colors.grey.shade500),
                     ),
                   ],
                 ),
@@ -142,6 +151,52 @@ class _TambahResepPageState extends State<TambahResepPage> {
               // Waktu dan Tingkat Kesulitan
               Row(
                 children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Kategori",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        DropdownButtonFormField<String>(
+                          value: _selectedKategori,
+                          hint: const Text('Pilih Kategori'),
+                          items: _kategoriList.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (String? value) {
+                            setState(() {
+                              _selectedKategori = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Kategori harus dipilih';
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.grey.shade50,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: _buildTextField(
                       controller: _timeController,

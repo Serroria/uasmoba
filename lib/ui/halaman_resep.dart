@@ -6,9 +6,12 @@ class HalamanResep extends StatelessWidget {
   static const List<Map<String, dynamic>> dummyRecipes = [
     {
       'title': 'Bening Sawi Jagung',
-      'imageUrl': 'URL_SAWI_JAGUNG',
+      'imageUrl':
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-i5vY9awY9Ql0bKrXHmecMC2kfCVWPGDIZOJJIx1gHR5lFMBW0ISMp9DwAS9oevv3FkKfzd4cfo_DqjiQfD79X3mdfniidbacWUiXw9UX&s=10',
       'rating': 5.0,
       'steps': 5,
+      'kategori': 'asia',
+      'difficulty': 'sedang',
       'author': 'Ovie Kholifatun',
     },
     {
@@ -16,6 +19,8 @@ class HalamanResep extends StatelessWidget {
       'imageUrl': 'URL_ALPUKAT_KOCOK',
       'rating': 4.6,
       'steps': 5,
+      'kategori': 'asia',
+      'difficulty': 'sedang',
       'author': 'Yummy Official',
     },
     {
@@ -23,6 +28,8 @@ class HalamanResep extends StatelessWidget {
       'imageUrl': 'URL_BUMBU_PUTIH',
       'rating': 4.8,
       'steps': 20,
+      'kategori': 'asia',
+      'difficulty': 'sedang',
       'author': 'Yummy Official',
     },
     {
@@ -30,6 +37,8 @@ class HalamanResep extends StatelessWidget {
       'imageUrl': 'URL_PISANG_CARAMEL',
       'rating': 4.9,
       'steps': 5,
+      'kategori': 'asia',
+      'difficulty': 'sedang',
       'author': 'Mama Queen',
     },
   ];
@@ -42,7 +51,7 @@ class HalamanResep extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      appBar: AppBar(title: Text('Resep-resep')),
+      appBar: AppBar(centerTitle: true, title: Text('Resep-resep')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -73,6 +82,8 @@ class HalamanResep extends StatelessWidget {
                   title: recipe['title'],
                   rating: recipe['rating'].toString(),
                   steps: recipe['steps'],
+                  kategori: recipe['kategori'],
+                  difficulty: recipe['difficulty'],
                   author: recipe['author'],
                   // Opsional: key: ValueKey(recipe['id']),
                 );
