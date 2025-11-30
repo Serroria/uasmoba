@@ -1,5 +1,11 @@
 // lib/ui/tambah_resep_page.dart
+
 import 'package:flutter/material.dart';
+import 'package:uasmoba/services/api_service.dart';
+// 👇 IMPORT YANG DITAMBAHKAN
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+// 👆 IMPORT YANG DITAMBAHKAN
 
 class TambahResepPage extends StatefulWidget {
   const TambahResepPage({super.key});
@@ -9,9 +15,22 @@ class TambahResepPage extends StatefulWidget {
 }
 
 class _TambahResepPageState extends State<TambahResepPage> {
+  // 👇 DEKLARASI STATE UNTUK FILE GAMBAR
+  File? _imageFile;
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path); // MENGGUNAKAN _imageFile
+      });
+    }
+  }
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _kategoriController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _ingredientsController = TextEditingController();
   final TextEditingController _stepsController = TextEditingController();
@@ -28,6 +47,8 @@ class _TambahResepPageState extends State<TambahResepPage> {
   String _difficulty = 'Mudah';
   final List<String> _difficultyLevels = ['Mudah', 'Sedang', 'Sulit'];
 
+  bool _isLoading = false;
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -38,22 +59,61 @@ class _TambahResepPageState extends State<TambahResepPage> {
     super.dispose();
   }
 
-  void _submitRecipe() {
-    if (_formKey.currentState!.validate()) {
-      // Simulasi data resep baru
-      final newRecipe = {
-        'id': DateTime.now().millisecondsSinceEpoch,
+  void _submitRecipe() async {
+    // Memastikan form valid dan kategori sudah dipilih
+    if (_formKey.currentState!.validate() && _selectedKategori != null) {
+      setState(() {
+        _isLoading = true; // Aktifkan loading saat submit
+      });
+
+      // 1. Kumpulkan Data (Kunci harus SAMA dengan kolom database CI4 Anda)
+      final Map<String, dynamic> newRecipeData = {
         'title': _titleController.text,
-        'kategori': _selectedKategori,
+        'kategori':
+            _selectedKategori!, // Pastikan nilai ada karena sudah divalidasi
         'description': _descriptionController.text,
-        'image_url':
-            'https://picsum.photos/id/${DateTime.now().millisecondsSinceEpoch % 100 + 300}/200',
-        'rating': 4.5,
+        'ingredients': _ingredientsController.text, // Kolom TEXT di DB
+        'steps': _stepsController.text, // Kolom TEXT di DB
         'time': _timeController.text,
-        'difficulty': _difficulty,
+        'difficulty': _difficulty, // Dari Dropdown
+        // Data yang di-hardcode sementara:
+        'rating': 4.5, // Ganti dengan 0 atau NULL jika rating diisi belakangan
+        'user_id': 1,
       };
 
-      Navigator.pop(context, newRecipe);
+      try {
+        // 2. Kirim Data ke API CI4
+        // Mengirim data teks (newRecipeData) dan file gambar (_imageFile)
+        final result = await ApiService.postRecipe(newRecipeData, _imageFile);
+
+        // 3. Jika Berhasil
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Resep berhasil disimpan!')),
+          );
+          Navigator.pop(context, result); // Tutup dan kirim hasil data
+        }
+      } catch (e) {
+        // 4. Jika Gagal
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Gagal menyimpan resep: $e')));
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false; // Non-aktifkan loading
+          });
+        }
+      }
+    } else {
+      // Kasus ketika validasi gagal (misal kategori belum dipilih)
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Mohon lengkapi semua form yang wajib diisi.'),
+        ),
+      );
     }
   }
 
@@ -77,14 +137,25 @@ class _TambahResepPageState extends State<TambahResepPage> {
         ),
         actions: [
           TextButton(
-            onPressed: _submitRecipe,
-            child: const Text(
-              "Simpan",
-              style: TextStyle(
-                color: Colors.deepOrange,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            onPressed: _isLoading
+                ? null
+                : _submitRecipe, // Nonaktifkan saat loading
+            child: _isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      color: Colors.deepOrange,
+                    ),
+                  )
+                : const Text(
+                    "Simpan",
+                    style: TextStyle(
+                      color: Colors.deepOrange,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
           ),
         ],
       ),
@@ -94,33 +165,52 @@ class _TambahResepPageState extends State<TambahResepPage> {
           key: _formKey,
           child: Column(
             children: [
-              // Gambar resep (placeholder)
-              Container(
-                width: double.infinity,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.camera_alt,
-                      size: 50,
-                      color: Colors.grey.shade400,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "Tambahkan Foto Resep",
-                      style: TextStyle(color: Colors.grey.shade500),
-                    ),
-                  ],
+              // Gambar resep
+              GestureDetector(
+                onTap: _pickImage, // Panggil fungsi pick image
+                child: Container(
+                  width: double.infinity,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(12),
+                    // Tampilkan gambar yang dipilih, atau placeholder
+                    image:
+                        _imageFile !=
+                            null // MENGGUNAKAN _imageFile
+                        ? DecorationImage(
+                            image: FileImage(
+                              _imageFile!,
+                            ), // MENGGUNAKAN _imageFile
+                            fit: BoxFit.cover,
+                          )
+                        : null,
+                  ),
+                  child:
+                      _imageFile ==
+                          null // MENGGUNAKAN _imageFile
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.camera_alt,
+                              size: 50,
+                              color: Colors.grey.shade400,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              "Tambahkan Foto Resep",
+                              style: TextStyle(color: Colors.grey.shade500),
+                            ),
+                          ],
+                        )
+                      : null, // Jika gambar sudah ada, jangan tampilkan placeholder
                 ),
               ),
+              // Saya menghapus Container placeholder yang duplikat di sini
               const SizedBox(height: 24),
 
-              // Form fields
+              // 1. Judul Resep
               _buildTextField(
                 controller: _titleController,
                 label: "Judul Resep",
@@ -134,6 +224,7 @@ class _TambahResepPageState extends State<TambahResepPage> {
               ),
               const SizedBox(height: 16),
 
+              // 2. Deskripsi
               _buildTextField(
                 controller: _descriptionController,
                 label: "Deskripsi",
@@ -148,7 +239,7 @@ class _TambahResepPageState extends State<TambahResepPage> {
               ),
               const SizedBox(height: 16),
 
-              // Waktu dan Tingkat Kesulitan
+              // 3. Kategori, Waktu, dan Kesulitan (Layout 3 kolom)
               Row(
                 children: [
                   Expanded(
@@ -184,14 +275,7 @@ class _TambahResepPageState extends State<TambahResepPage> {
                             }
                             return null;
                           },
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.grey.shade50,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
+                          decoration: _getDropdownInputDecoration(),
                         ),
                       ],
                     ),
@@ -201,10 +285,10 @@ class _TambahResepPageState extends State<TambahResepPage> {
                     child: _buildTextField(
                       controller: _timeController,
                       label: "Waktu Memasak",
-                      hintText: "Contoh: 30 menit",
+                      hintText: "30 menit",
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Waktu memasak harus diisi';
+                          return 'Waktu harus diisi';
                         }
                         return null;
                       },
@@ -216,7 +300,7 @@ class _TambahResepPageState extends State<TambahResepPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          "Tingkat Kesulitan",
+                          "Tingkat Kesulitan!",
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 14,
@@ -237,14 +321,7 @@ class _TambahResepPageState extends State<TambahResepPage> {
                               _difficulty = value!;
                             });
                           },
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.grey.shade50,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
+                          decoration: _getDropdownInputDecoration(),
                         ),
                       ],
                     ),
@@ -253,10 +330,11 @@ class _TambahResepPageState extends State<TambahResepPage> {
               ),
               const SizedBox(height: 16),
 
+              // 4. Bahan-bahan
               _buildTextField(
                 controller: _ingredientsController,
                 label: "Bahan-bahan",
-                hintText: "Tulis bahan-bahan yang diperlukan...",
+                hintText: "Contoh: 1 sdt Garam, 200 gr Ayam...",
                 maxLines: 5,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -267,10 +345,11 @@ class _TambahResepPageState extends State<TambahResepPage> {
               ),
               const SizedBox(height: 16),
 
+              // 5. Langkah-langkah
               _buildTextField(
                 controller: _stepsController,
                 label: "Langkah-langkah",
-                hintText: "Tulis langkah-langkah memasak...",
+                hintText: "Contoh: 1. Panaskan minyak. 2. Masukkan bumbu...",
                 maxLines: 8,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -286,6 +365,7 @@ class _TambahResepPageState extends State<TambahResepPage> {
     );
   }
 
+  // Widget pembantu untuk TextField
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
@@ -321,6 +401,19 @@ class _TambahResepPageState extends State<TambahResepPage> {
           ),
         ),
       ],
+    );
+  }
+
+  // Widget pembantu untuk dekorasi Dropdown
+  InputDecoration _getDropdownInputDecoration() {
+    return InputDecoration(
+      filled: true,
+      fillColor: Colors.grey.shade50,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide.none,
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     );
   }
 }
