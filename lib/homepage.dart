@@ -1,147 +1,170 @@
-// lib/home_page.dart
-
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          // --- 1. Area Filter/Kategori Resep ---
-          const Text(
-            'Filter Kategori Resep:',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          SizedBox(
-            height: 40, // Tinggi untuk daftar Chip (kategori)
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: const <Widget>[
-                CategoryChip(label: 'Semua'),
-                CategoryChip(label: 'Nusantara'),
-                CategoryChip(label: 'Asia'),
-                CategoryChip(label: 'Internasional'),
-                CategoryChip(label: 'Vegan'),
-              ],
-            ),
-          ),
-
-          const Divider(height: 30),
-
-          // --- 2. Judul Resep Populer ---
-          const Text(
-            'Resep Populer Minggu Ini',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 15),
-
-          // --- 3. Daftar Card Resep (Placeholder) ---
-          RecipeCard(
-            title: 'Nasi Goreng Spesial',
-            duration: '20 Menit',
-            imageUrl:
-                'https://images.unsplash.com/photo-1545638206-8d591b9423b9', // Ganti dengan URL/Aset Gambar asli
-          ),
-          RecipeCard(
-            title: 'Sate Ayam Madura',
-            duration: '45 Menit',
-            imageUrl:
-                'https://images.unsplash.com/photo-1589302636881-197e55ed13c0',
-          ),
-          // Tambahkan lebih banyak RecipeCard di sini...
-          const SizedBox(height: 50), // Ruang bawah agar tidak terpotong navbar
-        ],
-      ),
-    );
-  }
+  State<HomePage> createState() => _HomePageState();
 }
 
-// Widget untuk Chip Kategori (Reusable)
-class CategoryChip extends StatelessWidget {
-  final String label;
-
-  const CategoryChip({super.key, required this.label});
+class _HomePageState extends State<HomePage> {
+  String _username = "User"; // Nanti diganti saat login dari backend
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
-      child: Chip(
-        label: Text(label),
-        backgroundColor: Colors.deepOrange.shade50,
-        labelStyle: TextStyle(color: Colors.deepOrange.shade700),
-      ),
-    );
-  }
-}
-
-// Widget untuk Card Resep (Reusable)
-class RecipeCard extends StatelessWidget {
-  final String title;
-  final String duration;
-  final String imageUrl;
-
-  const RecipeCard({
-    super.key,
-    required this.title,
-    required this.duration,
-    required this.imageUrl,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 15),
-      elevation: 3,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Gambar Resep
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-            child: Image.network(
-              imageUrl,
-              height: 150,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                height: 150,
-                color: Colors.grey.shade200,
-                child: const Center(child: Text('Gagal Muat Gambar')),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Halo, $_username",
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ),
-          // Detail Resep
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Row(
-                  children: [
-                    const Icon(Icons.timer, size: 16, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text(duration, style: const TextStyle(color: Colors.grey)),
-                  ],
-                ),
-              ],
+            const SizedBox(height: 4),
+            const Text(
+              "Mau masak apa hari ini?",
+              style: TextStyle(
+                color: Colors.black54,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
             ),
+          ],
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
+            const Text(
+              "Mau masak apa hari ini",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 14),
+
+            // 🔍 Search Bar
+            TextField(
+              decoration: InputDecoration(
+                hintText: "Coba cari resep...",
+                prefixIcon: const Icon(Icons.search, size: 20),
+                filled: true,
+                fillColor: Colors.grey.shade100,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // 🍲 Kategori
+            const Text(
+              "Kategori Resep",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 90,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  _categoryItem("Nusantara", Icons.ramen_dining),
+                  _categoryItem("Asia", Icons.set_meal),
+                  _categoryItem("Internasional", Icons.public),
+                  _categoryItem("Vegan", Icons.eco),
+                  _categoryItem("Dessert", Icons.icecream),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // 📌 Card Resep 1
+            const Text(
+              "Cari Resep Terbaru",
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            _recipeCard("Ayam Bakar Padang", 101),
+            const SizedBox(height: 20),
+
+            // 📌 Card Resep 2
+            const Text(
+              "Resep Populer",
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            _recipeCard("Mie Goreng Jawa", 250),
+            _recipeCard("Rendang Daging", 244),
+            _recipeCard("Klepon Gula Merah", 108),
+
+            const SizedBox(height: 20),
+
+            // 📌 Card Resep 3
+            const Text(
+              "Rekomendasi Untuk Kamu",
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            _recipeCard("Nasi Uduk Betawi", 209),
+            _recipeCard("Kimchi Jjigae", 210),
+          ],
+        ),
+      ),
+
+      // ⬇ Navbar Bawah
+    );
+  }
+
+  Widget _categoryItem(String title, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 16),
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 30,
+            backgroundColor: Colors.deepOrange.shade50,
+            child: Icon(icon, size: 28, color: Colors.deepOrange),
           ),
+          const SizedBox(height: 6),
+          Text(title, style: const TextStyle(fontSize: 12)),
         ],
+      ),
+    );
+  }
+
+  // ✅ Kita pertahankan 1 function recipe card
+  Widget _recipeCard(String title, int id) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        leading: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.network(
+            "https://picsum.photos/id/$id/200",
+            width: 55,
+            height: 55,
+            fit: BoxFit.cover,
+          ),
+        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: const Text("Cocok untuk menu harian kamu"),
+        trailing: const Icon(
+          Icons.arrow_forward_ios,
+          size: 16,
+          color: Colors.deepOrange,
+        ),
       ),
     );
   }
