@@ -6,6 +6,7 @@ import 'ui/registrasi_page.dart';
 import 'widgets/bottom_nav.dart';
 import 'ui/my_resep_page.dart';
 import 'ui/tambah_resep_page.dart';
+import 'ui/profile_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,7 +37,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// ✅ Wrapper Navbar (biar HomePage punya navbar bawah)
 class NavWrapper extends StatefulWidget {
   const NavWrapper({super.key});
 
@@ -51,9 +51,7 @@ class _NavWrapperState extends State<NavWrapper> {
     const HomePage(),
     const HalamanResep(),
     const MyResepPage(),
-    const Center(child: Text("Kreasiku Page")),
-    // Ganti dengan halaman My Resep
-    const Center(child: Text("Profil Page")),
+    const ProfilePage(),
   ];
 
   void _tap(index) {

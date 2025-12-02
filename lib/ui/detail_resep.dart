@@ -21,8 +21,8 @@ class DetailResep extends StatelessWidget {
         backgroundColor: Colors.deepOrange,
       ),
       body: SingleChildScrollView(
-        padding: const Edge,
+        padding: const EdgeInsets.all(16),
       ),
-    )
+    );
   }
 }
